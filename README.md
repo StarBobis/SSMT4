@@ -1,13 +1,11 @@
 # SSMT4
 
-The next generation of SSMT (Rust + Tauri)
+第四代基于图形渲染Hook工具的多功能工具箱：神圣猫头4
 
+当前后端基于:
+- 3Dmigoto (DX11)
 
+# 仍在开发测试中
 
-# Tauri + Vanilla
+当前仍在开发测试中，请继续使用SSMT3，直到此仓库发布正式Release版本
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
