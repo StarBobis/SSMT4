@@ -30,6 +30,8 @@ pub fn run() {
         // 添加 tauri-plugin-opener 插件，这个插件允许应用打开外部链接或文件
         // init() 是插件的初始化函数，返回插件实例
         .plugin(tauri_plugin_opener::init())
+        // 添加 tauri-plugin-dialog 插件，用于显示文件/文件夹选择对话框
+        .plugin(tauri_plugin_dialog::init())
         // 设置一个 setup 钩子，这是一个闭包，在应用启动时执行
         // 它接收一个可变引用到 App 实例，用于配置窗口和其他初始化逻辑
         .setup(|app| {

@@ -14,12 +14,24 @@
     "noEmit": true,
     "jsx": "preserve",
 
+    /* Path mapping to help TS resolve @tauri-apps packages in node_modules */
+    "baseUrl": ".",
+    "paths": {
+      "@tauri-apps/*": ["node_modules/@tauri-apps/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src-tauri/gen/**/*.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
