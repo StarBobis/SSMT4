@@ -70,7 +70,8 @@ const startGame = async () => {
   }
 
   try {
-    await invoke('launch', { path: path_startup_folder.value, args: startup_parameters.value || null })
+    // admin: true 强制以管理员权限启动，触发 UAC
+    await invoke('launch', { path: path_startup_folder.value, args: startup_parameters.value || null, admin: true })
     console.log('已启动程序')
   } catch (e) {
     console.error('启动程序失败:', e)

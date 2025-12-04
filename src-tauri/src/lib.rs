@@ -9,19 +9,47 @@ use tauri::Manager;
 
 // 在前端点击开始游戏时调用此命令以启动指定路径的程序
 // path: 可执行文件的完整路径
+// admin: 是否以管理员权限运行
 #[tauri::command]
-fn launch(path: String, args: Option<String>) -> Result<(), String> {
+fn launch(path: String, args: Option<String>, admin: bool) -> Result<(), String> {
     use std::process::Command;
+    use std::os::windows::process::CommandExt;
 
-    let mut cmd = Command::new(&path);
-    if let Some(a) = args {
-        // 简单按空白分割参数 —— 对常见场景有效。若需更复杂解析可改进。
-        let parts = a.split_whitespace();
-        cmd.args(parts);
+    if admin {
+        let mut cmd = Command::new("powershell");
+        cmd.arg("-Command");
+        
+        // Escape single quotes for PowerShell
+        let safe_path = path.replace("'", "''");
+        let mut ps_cmd = format!("Start-Process -FilePath '{}'", safe_path);
+        
+        if let Some(a) = args {
+            let safe_args = a.replace("'", "''");
+            ps_cmd.push_str(&format!(" -ArgumentList '{}'", safe_args));
+        }
+        
+        ps_cmd.push_str(" -Verb RunAs");
+        
+        cmd.arg(ps_cmd);
+        
+        // CREATE_NO_WINDOW to hide the powershell console
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+
+        cmd.spawn()
+            .map(|_child| ())
+            .map_err(|e| e.to_string())
+    } else {
+        let mut cmd = Command::new(&path);
+        if let Some(a) = args {
+            // 简单按空白分割参数 —— 对常见场景有效。若需更复杂解析可改进。
+            let parts = a.split_whitespace();
+            cmd.args(parts);
+        }
+
+        // 尝试 spawn 子进程，不阻塞当前线程
+        cmd.spawn().map(|_child| ()).map_err(|e| e.to_string())
     }
-
-    // 尝试 spawn 子进程，不阻塞当前线程
-    cmd.spawn().map(|_child| ()).map_err(|e| e.to_string())
 }
 
 // 这是一个条件编译属性，用于移动端（Android/iOS）入口点

@@ -16,7 +16,8 @@
     <security>
       <requestedPrivileges>
         <!-- requireAdministrator will make Windows always show a UAC prompt on launch -->
-        <requestedExecutionLevel level="requireAdministrator" uiAccess="false"/>
+        <!-- Changed to asInvoker to avoid UAC on startup, we will request it when needed -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
       </requestedPrivileges>
     </security>
   </trustInfo>
