@@ -53,6 +53,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { open } from '@tauri-apps/plugin-dialog'
+import { invoke } from '@tauri-apps/api/core'
+import { ElMessageBox } from 'element-plus'
 
 // 主页组件逻辑
 const path_3dmigoto_folder = ref('')
@@ -60,9 +62,19 @@ const path_process_folder = ref('')
 const path_startup_folder = ref('')
 const startup_parameters = ref('')
 
-const startGame = () => {
-  // 这里可以添加开始游戏的逻辑，比如导航到游戏页面或调用 Rust 函数
-  console.log('开始游戏！')
+const startGame = async () => {
+  // 调用后端 launch 命令启动指定程序
+  if (!path_startup_folder.value) {
+    await ElMessageBox.alert('未设置启动路径', '提示', { confirmButtonText: '确定' })
+    return
+  }
+
+  try {
+    await invoke('launch', { path: path_startup_folder.value, args: startup_parameters.value || null })
+    console.log('已启动程序')
+  } catch (e) {
+    console.error('启动程序失败:', e)
+  }
 }
 
 // 选择 3Dmigoto 所在文件夹（目录选择）

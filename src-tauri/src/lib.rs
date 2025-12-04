@@ -6,15 +6,22 @@ use tauri::Manager;
 // 这是 Manager trait 的 API 文档链接，包含所有可用方法和示例
 // https://docs.rs/tauri/latest/tauri/trait.Manager.html
 
-// 这是一个 Tauri 命令属性宏，用于将 Rust 函数暴露给前端 JavaScript 调用
-// 前端可以通过 window.__TAURI__.invoke('greet', { name: 'World' }) 来调用此函数
+
+// 在前端点击开始游戏时调用此命令以启动指定路径的程序
+// path: 可执行文件的完整路径
 #[tauri::command]
-// 定义一个名为 greet 的函数，接收一个字符串引用参数 name，返回一个 String
-// 这个函数用于生成一个问候消息，从 Rust 端返回给前端
-fn greet(name: &str) -> String {
-    // 使用 format! 宏来格式化字符串，将传入的 name 插入到模板中
-    // 这会创建一个友好的问候消息，表明它来自 Rust 端
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn launch(path: String, args: Option<String>) -> Result<(), String> {
+    use std::process::Command;
+
+    let mut cmd = Command::new(&path);
+    if let Some(a) = args {
+        // 简单按空白分割参数 —— 对常见场景有效。若需更复杂解析可改进。
+        let parts = a.split_whitespace();
+        cmd.args(parts);
+    }
+
+    // 尝试 spawn 子进程，不阻塞当前线程
+    cmd.spawn().map(|_child| ()).map_err(|e| e.to_string())
 }
 
 // 这是一个条件编译属性，用于移动端（Android/iOS）入口点
@@ -59,9 +66,9 @@ pub fn run() {
             // 如果有错误，可以返回 Err，但这里我们假设所有操作都成功
             Ok(())
         })
-        // 注册命令处理器，使用 generate_handler! 宏自动生成处理 greet 命令的代码
-        // 这允许前端通过 invoke 调用 greet 函数
-        .invoke_handler(tauri::generate_handler![greet])
+        // 注册命令处理器，使用 generate_handler! 宏自动生成处理命令的代码
+        // 这允许前端通过 invoke 调用 Rust 中标记为 #[tauri::command] 的函数
+        .invoke_handler(tauri::generate_handler![launch])
         // 运行应用，使用 generate_context!() 宏生成应用上下文（包括配置等）
         // run() 方法启动事件循环，开始监听前端调用和系统事件
         .run(tauri::generate_context!())
