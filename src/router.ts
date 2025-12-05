@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Home.vue'
 import Workbench from './views/Workbench.vue'
 import Marker from './views/Marker.vue'
+import Settings from './views/Settings.vue'
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/marker',
     name: 'Marker',
     component: Marker
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings
   }
 ]
 
